@@ -1,5 +1,5 @@
 const { Client, GatewayIntentBits } = require('discord.js');
-const AdminCommands = require('./bot/admin-commands');
+const AdminCommands = require('./admin-commands');
 
 class DiscordBot {
     constructor(config, storage) {
@@ -17,7 +17,6 @@ class DiscordBot {
         this.client.once('ready', () => {
             console.log(`Bot is online as ${this.client.user.tag}!`);
             console.log(`Monitoring YouTube channel: ${this.config.channelId}`);
-            
             this.adminCommands.setClient(this.client);
             this.adminCommands.registerCommands();
         });
@@ -43,15 +42,12 @@ class DiscordBot {
 
     async sendVideoNotification(video, type, url) {
         const title = video.snippet.title;
-        
         const typeConfig = {
             video: { emoji: '🎥', messageTitle: 'New Video' },
             short: { emoji: '⚡', messageTitle: 'New Short' },
             live: { emoji: '🔴', messageTitle: 'New LiveStream' }
         };
-
         const { emoji, messageTitle } = typeConfig[type] || typeConfig.video;
-        
         try {
             const channel = await this.client.channels.fetch(this.config.discordChannelId);
             await channel.send(`${emoji} **${messageTitle}** - ${title}\n${url}`);

@@ -4,9 +4,11 @@ A Discord bot that automatically notifies your server when new content is posted
 
 ## What it does
 - Watches the YouTube channel for new uploads
-- Posts instant notifications to Discord for videos, shorts & livestreams  
+- Posts instant notifications to Discord for videos, shorts & livestreams
 - Prevents spam by only posting new content (not old videos on startup)
 - Runs continuously in the cloud without manual intervention
+- Admin controls via Discord slash commands (role & channel restricted)
+- Professional, modular project structure
 
 ## Quick Start
 
@@ -35,6 +37,8 @@ DISCORD_BOT_TOKEN=your_discord_bot_token
 DISCORD_CHANNEL_ID=your_discord_channel_id
 CHECK_INTERVAL_MINUTES=5
 RENDER_EXTERNAL_URL=https://your-app.onrender.com
+ADMIN_ROLE_ID=your_admin_role_id
+ADMIN_CHANNEL_ID=your_admin_channel_id
 ```
 
 **How to get them:**
@@ -48,17 +52,24 @@ The bot checks the YouTube channel every 5 minutes for new content. When somethi
 1. Detects if it's a video, short, or livestream
 2. Posts a notification to your Discord channel
 3. Remembers what was posted to avoid duplicates
+4. Admins can enable/disable the bot or check status via Discord slash commands
 
 ## Project Structure
 
 ```
 src/
-├── config.js    # Configuration loading
-├── youtube.js   # YouTube API service  
-├── discord.js   # Discord bot functions
-├── storage.js   # Data persistence
-└── server.js    # HTTP server for hosting
-index.js         # Main entry point
+└── bot/
+    ├── config.js        # Configuration loading
+    ├── youtube.js       # YouTube API service
+    ├── discord.js       # Discord bot functions
+    ├── admin-commands.js # Admin slash commands (/enable, /disable, /status)
+    ├── storage.js       # Data persistence & bot state
+    └── server.js        # HTTP server for hosting
+index.js                 # Main entry point
+config/
+    └── config.json      # Static configuration
+/data/
+    └── lastVideos.json  # Bot state (last posted videos)
 ```
 
 ## Cloud Deployment
@@ -67,3 +78,4 @@ Ready to deploy on cloud platforms like Render.com, Railway, or Fly.io. Includes
 - HTTP server for health checks
 - Self-ping mechanism to prevent sleeping
 - Environment-based configuration
+- Modular, maintainable codebase

@@ -1,16 +1,16 @@
 const cron = require('node-cron');
-const { config, validateConfig } = require('./src/config');
-const YouTubeService = require('./src/youtube');
-const DiscordBot = require('./src/discord');
-const StorageService = require('./src/storage');
-const HttpServer = require('./src/server');
+const { config, validateConfig } = require('./src/bot/config');
+const YouTubeService = require('./src/bot/youtube');
+const DiscordBot = require('./src/bot/discord');
+const StorageService = require('./src/bot/storage');
+const HttpServer = require('./src/bot/server');
 
 // Main bot class that handles YouTube monitoring and Discord notifications
 class GrillGamersBot {
     constructor() {
         this.youtube = new YouTubeService(config);
-        this.discord = new DiscordBot(config);
         this.storage = new StorageService();
+        this.discord = new DiscordBot(config, this.storage);
         this.server = null;
     }
 
@@ -44,6 +44,12 @@ class GrillGamersBot {
 
     async checkNewVideos() {
         try {
+            // Check if bot is enabled
+            if (!this.storage.isBotEnabled()) {
+                console.log('Bot is disabled - skipping video check');
+                return;
+            }
+
             const videos = await this.youtube.fetchVideos();
             
             // Skip old videos on first run
