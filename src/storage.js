@@ -9,12 +9,10 @@ class StorageService {
 
     loadLastVideos() {
         try {
-            // First try to load from memory/env (for cloud persistence)
             if (process.env.LAST_VIDEOS_DATA) {
                 return JSON.parse(process.env.LAST_VIDEOS_DATA);
             }
             
-            // Fallback to file system
             if (fs.existsSync(this.lastVideosFile)) {
                 return JSON.parse(fs.readFileSync(this.lastVideosFile, 'utf8'));
             }

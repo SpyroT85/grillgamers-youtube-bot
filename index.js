@@ -15,26 +15,20 @@ class GrillGamersBot {
     }
 
     async initialize() {
-        console.log('Starting GrillGamers YouTube Discord Bot...');
-        
+        const startTime = new Date().toISOString();
+        console.log(`Bot started at ${startTime}`);
         validateConfig();
-        
         await this.discord.login();
-        
-        // Start web server for health checks and keep-alive
+        // Start web server for health checks and keep online the bot
         this.server = new HttpServer(config, this.discord.getClient());
         this.server.start();
-        
-        // Setup the YouTube video checking schedule
         this.setupVideoMonitoring();
         console.log('Bot initialized successfully!');
     }
 
     setupVideoMonitoring() {
-        // Check for new videos immediately on startup
         this.checkNewVideos().catch(console.error);
         
-        // Schedule regular checks using cron
         cron.schedule(`*/${config.checkIntervalMinutes} * * * *`, () => {
             this.checkNewVideos().catch(console.error);
         });
@@ -44,8 +38,9 @@ class GrillGamersBot {
 
     async checkNewVideos() {
         try {
+            const checkTime = new Date().toISOString();
+            console.log(`Last check at ${checkTime}`);
             const videos = await this.youtube.fetchVideos();
-            
             // Skip old videos on first run
             if (this.storage.isFirstRunCheck()) {
                 console.log('First run detected - marking existing videos as processed to prevent spam');
@@ -58,16 +53,12 @@ class GrillGamersBot {
                 console.log(`Marked ${videos.length} existing videos as processed`);
                 return;
             }
-            
             // Process videos in chronological order (oldest first)
             for (let video of videos.reverse()) {
                 const videoId = video.id.videoId;
-                
-                // Only send notification for videos we haven't seen before
                 if (!this.storage.isVideoProcessed(videoId)) {
                     const type = this.youtube.detectVideoType(video);
                     const url = this.youtube.getVideoUrl(videoId, type);
-                    
                     await this.discord.sendVideoNotification(video, type, url);
                     this.storage.markVideoAsProcessed(video, type, url);
                 }

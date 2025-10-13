@@ -32,21 +32,29 @@ class DiscordBot {
 
     async sendVideoNotification(video, type, url) {
         const title = video.snippet.title;
-        
         const typeConfig = {
             video: { emoji: '🎥', messageTitle: 'New Video' },
             short: { emoji: '⚡', messageTitle: 'New Short' },
-            live: { emoji: '🔴', messageTitle: 'New LiveStream' }
+            live: { emoji: '🔴', messageTitle: 'New LiveStream' },
+            premiere: { emoji: '🟣', messageTitle: 'New Premiere' }
         };
-
         const { emoji, messageTitle } = typeConfig[type] || typeConfig.video;
-        
         try {
             const channel = await this.client.channels.fetch(this.config.discordChannelId);
+            if (!channel) {
+                console.error(`Discord channel with ID ${this.config.discordChannelId} not found.`);
+                return;
+            }
             await channel.send(`${emoji} **${messageTitle}** - ${title}\n${url}`);
             console.log(`Sent ${type}: ${title}`);
         } catch (error) {
-            console.error('Error sending message to Discord:', error);
+            if (error.code === 50001) {
+                console.error('Missing access to the Discord channel. Check bot permissions.');
+            } else if (error.code === 10003) {
+                console.error('Discord channel not found. It may have been deleted or the ID is wrong.');
+            } else {
+                console.error('Error sending message to Discord:', error);
+            }
         }
     }
 

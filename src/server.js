@@ -7,13 +7,16 @@ class HttpServer {
         this.discordClient = discordClient;
         this.server = null;
         this.keepAliveInterval = null;
+        this.lastActivity = null;
     }
 
     start() {
         this.server = http.createServer((req, res) => {
             if (req.url === '/health' || req.url === '/healthz') {
+                console.log(`[${new Date().toISOString()}] Health check requested.`);
                 this.handleHealthCheck(res);
             } else {
+                console.log(`[${new Date().toISOString()}] Root requested.`);
                 this.handleRoot(res);
             }
         });
@@ -31,9 +34,9 @@ class HttpServer {
             status: 'healthy',
             bot: this.discordClient && this.discordClient.user ? 'online' : 'connecting',
             timestamp: new Date().toISOString(),
-            uptime: process.uptime()
+            uptime: process.uptime(),
+            lastActivity: this.lastActivity || 'N/A'
         };
-
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify(healthStatus, null, 2));
     }
@@ -48,15 +51,13 @@ class HttpServer {
         if (process.env.RENDER_EXTERNAL_URL) {
             this.keepAliveInterval = setInterval(() => {
                 const url = `${process.env.RENDER_EXTERNAL_URL}/health`;
-                console.log(`Keep-alive ping to: ${url}`);
-                
+                console.log(`[${new Date().toISOString()}] Keep-alive ping to: ${url}`);
                 https.get(url, (res) => {
-                    console.log(`Keep-alive response: ${res.statusCode}`);
+                    console.log(`[${new Date().toISOString()}] Keep-alive response: ${res.statusCode}`);
                 }).on('error', (err) => {
-                    console.log('Keep-alive error:', err.message);
+                    console.log(`[${new Date().toISOString()}] Keep-alive error:`, err.message);
                 });
             }, 10 * 60 * 1000); // 10 minutes
-            
             console.log('Keep-alive mechanism started (10min intervals)');
         }
     }
@@ -66,7 +67,9 @@ class HttpServer {
             clearInterval(this.keepAliveInterval);
         }
         if (this.server) {
-            this.server.close();
+            this.server.close(() => {
+                console.log('HTTP server stopped.');
+            });
         }
     }
 }

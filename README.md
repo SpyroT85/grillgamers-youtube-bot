@@ -49,6 +49,35 @@ The bot checks the YouTube channel every 5 minutes for new content. When somethi
 2. Posts a notification to your Discord channel
 3. Remembers what was posted to avoid duplicates
 
+
+
+## Tutorial Setup
+
+1. Copy `.env.example` to `.env` and fill in your own API keys/IDs
+2. Run `npm install` to install all dependencies
+3. Run `npm start` to launch the bot
+
+## Technologies Used
+
+- Node.js
+- discord.js
+- axios
+- node-cron
+- Express (via http server)
+
+## Error Handling & Reliability
+
+- All secrets are loaded from environment variables (never hardcoded)
+- Retry mechanism for YouTube API failures or rate limits
+- Detailed logging for every important action (start, check, errors)
+- Health endpoint (`/health`) for monitoring and debugging
+- Self-ping for cloud hosting (Render, Railway, Fly.io)
+- Protection against duplicate notifications via storage
+
+## Screenshots / GIFs
+
+> Add here images or GIFs showing the bot in action on Discord!
+
 ## Project Structure
 
 ```
