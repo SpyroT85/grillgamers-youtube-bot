@@ -10,7 +10,7 @@ const config = {
     channelId: process.env.CHANNEL_ID || localConfig.channelId,
     discordBotToken: process.env.DISCORD_BOT_TOKEN || localConfig.discordBotToken,
     discordChannelId: process.env.DISCORD_CHANNEL_ID || localConfig.discordChannelId,
-    checkIntervalMinutes: process.env.CHECK_INTERVAL_MINUTES || localConfig.checkIntervalMinutes || 5,
+    checkIntervalMinutes: process.env.CHECK_INTERVAL_MINUTES || localConfig.checkIntervalMinutes || 16,
     port: process.env.PORT || 3000
 };
 function validateConfig() {
@@ -18,11 +18,11 @@ function validateConfig() {
     const missing = required.filter(key => !config[key]);
     
     if (missing.length > 0) {
-        console.error(`❌ Missing required configuration: ${missing.join(', ')}`);
+        console.error(`Missing required configuration: ${missing.join(', ')}`);
         process.exit(1);
     }
     
-    console.log('✅ Configuration loaded successfully');
+    console.log('Configuration loaded successfully');
 }
 
 module.exports = { config, validateConfig };

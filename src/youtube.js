@@ -46,7 +46,6 @@ class YouTubeService {
     }
 
     getIntervalSeconds() {
-        // Αν δεν ορίζεται στο config, default 60s
         const interval = this.config.checkIntervalMinutes ? Number(this.config.checkIntervalMinutes) * 60 : 60;
         return interval;
     }
