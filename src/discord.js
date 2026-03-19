@@ -26,7 +26,17 @@ class DiscordWebhook {
             await axios.post(this.webhookUrl, payload);
             console.log(`[Discord] Sent ${type}: ${title}`);
         } catch (error) {
-            if (error.response) {
+            if (error.response?.status === 429) {
+                const retryAfter = error.response.data?.retry_after || 30;
+                console.log(`[Discord] Rate limited - retrying after ${retryAfter}s`);
+                await new Promise(res => setTimeout(res, retryAfter * 1000));
+                try {
+                    await axios.post(this.webhookUrl, payload);
+                    console.log(`[Discord] Sent ${type} after retry: ${title}`);
+                } catch (retryError) {
+                    console.error('[Discord] Failed after retry:', retryError.message);
+                }
+            } else if (error.response) {
                 console.error(`[Discord] Webhook error ${error.response.status}:`, error.response.data);
             } else {
                 console.error('[Discord] Webhook error:', error.message);
