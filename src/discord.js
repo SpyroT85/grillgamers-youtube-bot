@@ -28,7 +28,7 @@ class DiscordWebhook {
             return true;
         } catch (error) {
             if (error.response?.status === 429) {
-                const retryAfter = error.response.data?.retry_after || 30;
+                const retryAfter = error.response.data?.retry_after || 60;
                 console.log(`[Discord] Rate limited - retrying after ${retryAfter}s`);
                 await new Promise(res => setTimeout(res, retryAfter * 1000));
                 try {
