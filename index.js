@@ -79,8 +79,10 @@ class GrillGamersBot {
                     const url = this.youtube.getVideoUrl(videoId, type);
 
                     console.log(`New ${type} detected: "${video.snippet.title}" (${videoId})`);
-                    await this.discord.sendVideoNotification(detail.snippet ? detail : video, type, url);
-                    await this.storage.markVideoAsProcessed(detail.id ? detail : video, type, url);
+                    const sent = await this.discord.sendVideoNotification(detail.snippet ? detail : video, type, url);
+                    if (sent) {
+                        await this.storage.markVideoAsProcessed(detail.id ? detail : video, type, url);
+                    }
                 }
             }
 

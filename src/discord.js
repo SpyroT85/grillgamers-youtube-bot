@@ -25,6 +25,7 @@ class DiscordWebhook {
         try {
             await axios.post(this.webhookUrl, payload);
             console.log(`[Discord] Sent ${type}: ${title}`);
+            return true;
         } catch (error) {
             if (error.response?.status === 429) {
                 const retryAfter = error.response.data?.retry_after || 30;
@@ -33,13 +34,17 @@ class DiscordWebhook {
                 try {
                     await axios.post(this.webhookUrl, payload);
                     console.log(`[Discord] Sent ${type} after retry: ${title}`);
+                    return true;
                 } catch (retryError) {
                     console.error('[Discord] Failed after retry:', retryError.message);
+                    return false;
                 }
             } else if (error.response) {
                 console.error(`[Discord] Webhook error ${error.response.status}:`, error.response.data);
+                return false;
             } else {
                 console.error('[Discord] Webhook error:', error.message);
+                return false;
             }
         }
     }
