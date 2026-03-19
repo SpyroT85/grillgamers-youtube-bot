@@ -9,7 +9,7 @@ class DiscordWebhook {
         const title = video.snippet.title;
 
         const typeConfig = {
-            video:    { emoji: '🎥', label: 'New video just dropped!' },
+            video:    { emoji: '🎬', label: 'New video just dropped!' },
             short:    { emoji: '⚡', label: 'New Short!' },
             live:     { emoji: '🔴', label: 'Live and Loaded!' },
             premiere: { emoji: '🟣', label: "Something's Coming..." }
